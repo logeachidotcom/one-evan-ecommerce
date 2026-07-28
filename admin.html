@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Admin Panel - One Evan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: #f4f6f9; color: #333; }
+        .login-container { width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; background: #111; }
+        .login-box { background: #fff; padding: 40px; border-radius: 10px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .login-box h2 { margin-bottom: 20px; text-align: center; color: #111; font-size: 22px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        .btn { width: 100%; background: #22c55e; color: #fff; padding: 12px; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .btn:hover { background: #16a34a; }
+
+        /* Dashboard Panel */
+        .dashboard { display: none; padding: 30px 5%; max-width: 1200px; margin: 0 auto; }
+        .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .card { background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .card h3 { margin-bottom: 20px; font-size: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #111; color: #fff; }
+        .delete-btn { background: #e74c3c; color: #fff; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; }
+        .delete-btn:hover { background: #c0392b; }
+    </style>
+</head>
+<body>
+
+    <!-- Login Section (Only Password Required, Email Hidden) -->
+    <div class="login-container" id="loginSection">
+        <div class="login-box">
+            <h2>🔒 Secret Admin Access</h2>
+            <div class="form-group">
+                <label>সিক্রেট পাসওয়ার্ড:</label>
+                <input type="password" id="adminPass" placeholder="আপনার পাসওয়ার্ড দিন">
+            </div>
+            <button class="btn" onclick="adminLogin()">প্রবেশ করুন</button>
+        </div>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div class="dashboard" id="dashboardSection">
+        <div class="dash-header">
+            <h2>ওয়ান ইভান - সিক্রেট অ্যাডমিন প্যানেল</h2>
+            <button class="btn" style="width: auto; padding: 8px 20px;" onclick="location.reload()">লগআউট</button>
+        </div>
+
+        <!-- Add Product Card -->
+        <div class="card">
+            <h3>নতুন প্রোডাক্ট অ্যাড করুন</h3>
+            <form onsubmit="addProduct(event)">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
+                    <div class="form-group">
+                        <label>প্রোডাক্টের নাম:</label>
+                        <input type="text" id="pName" required placeholder="যেমন: Formal Shoes">
+                    </div>
+                    <div class="form-group">
+                        <label>বর্তমান মূল্য (টাকা):</label>
+                        <input type="number" id="pPrice" required placeholder="1500">
+                    </div>
+                    <div class="form-group">
+                        <label>আগের মূল্য (ডিসকাউন্টসহ):</label>
+                        <input type="number" id="pOldPrice" required placeholder="2000">
+                    </div>
+                    <div class="form-group">
+                        <label>ছবির লিংক (Image URL):</label>
+                        <input type="text" id="pImg" required placeholder="Online image link">
+                    </div>
+                    <div class="form-group">
+                        <label>সাইজসমূহ:</label>
+                        <input type="text" id="pSizes" required placeholder="M, L, XL অথবা 40, 41, 42">
+                    </div>
+                </div>
+                <button type="submit" class="btn" style="margin-top: 15px;">প্রোডাক্ট পাবলিশ করুন</button>
+            </form>
+        </div>
+
+        <!-- Product List Card -->
+        <div class="card">
+            <h3>সকল প্রোডাক্ট লিস্ট</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>নাম</th>
+                        <th>মূল্য</th>
+                        <th>সাইজ</th>
+                        <th>অ্যাকশন</th>
+                    </tr>
+                </thead>
+                <tbody id="adminProductTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // সিকিউরড এনক্রিপ্টেড পাসওয়ার্ড (@oneevan781)
+        const encodedPass = "QG9uZWV2YW43ODE="; 
+
+        function adminLogin() {
+            const inputPass = document.getElementById('adminPass').value.trim();
+
+            if(btoa(inputPass) === encodedPass) {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('dashboardSection').style.display = 'block';
+                loadAdminProducts();
+            } else {
+                alert("ভুল পাসওয়ার্ড! আবার চেষ্টা করুন।");
+            }
+        }
+
+        function loadAdminProducts() {
+            let products = JSON.parse(localStorage.getItem('one_evan_products')) || [
+                { id: 1, name: "Premium Casual Shirt", price: 1250, oldPrice: 1600, img: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=500&q=80", sizes: "M, L, XL" },
+                { id: 2, name: "Classic Leather Shoes", price: 2800, oldPrice: 3500, img: "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=500&q=80", sizes: "40, 41, 42, 43" }
+            ];
+
+            const table = document.getElementById('adminProductTable');
+            table.innerHTML = "";
+            products.forEach((p, index) => {
+                table.innerHTML += `
+                    <tr>
+                        <td>${p.name}</td>
+                        <td>৳${p.price}</td>
+                        <td>${p.sizes}</td>
+                        <td><button class="delete-btn" onclick="deleteProduct(${index})">রিমুভ</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function addProduct(e) {
+            e.preventDefault();
+            let products = JSON.parse(localStorage.getItem('one_evan_products')) || [];
+            
+            const newProd = {
+                id: Date.now(),
+                name: document.getElementById('pName').value,
+                price: document.getElementById('pPrice').value,
+                oldPrice: document.getElementById('pOldPrice').value,
+                img: document.getElementById('pImg').value,
+                sizes: document.getElementById('pSizes').value
+            };
+
+            products.push(newProd);
+            localStorage.setItem('one_evan_products', JSON.stringify(products));
+            alert("প্রোডাক্ট সফলভাবে অ্যাড হয়েছে!");
+            location.reload();
+        }
+
+        function deleteProduct(index) {
+            let products = JSON.parse(localStorage.getItem('one_evan_products'));
+            products.splice(index, 1);
+            localStorage.setItem('one_evan_products', JSON.stringify(products));
+            loadAdminProducts();
+        }
+    </script>
+</body>
+</html>
