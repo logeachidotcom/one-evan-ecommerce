@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>One Evan - Men's Fashion & Accessories</title>
+    <title id="siteTitleTag">One Evan - Men's Fashion & Accessories</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -66,26 +66,24 @@
 </head>
 <body>
 
-    <!-- Header (No Admin Link Here) -->
+    <!-- Header -->
     <header>
-        <div class="logo">ONE EVAN</div>
+        <div class="logo" id="siteLogoText">ONE EVAN</div>
         <nav>
             <a href="#">হোম</a>
             <a href="#products">শপ</a>
         </nav>
     </header>
 
-    <!-- Hero Slider Section (Changes every 2 seconds) -->
+    <!-- Hero Slider Section -->
     <section class="hero" data-aos="fade-in">
-        <div class="hero-slider">
-            <div class="hero-slide active" style="background-image: url('https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?auto=format&fit=crop&w=1350&q=80');"></div>
-            <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1350&q=80');"></div>
-            <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1350&q=80');"></div>
+        <div class="hero-slider" id="heroSliderContainer">
+            <!-- Dynamic Slides will load here -->
         </div>
         <div class="hero-overlay"></div>
         <div class="hero-content">
-            <h1>Welcome to One Evan</h1>
-            <p>প্রিমিয়াম ছেলেদের ফ্যাশন, জেন্টস অ্যাক্সেসরিজ, জুতা এবং লাইফস্টাইলের নির্ভরযোগ্য ঠিকানা।</p>
+            <h1 id="heroTitleText">Welcome to One Evan</h1>
+            <p id="heroDescText">প্রিমিয়াম ছেলেদের ফ্যাশন, জেন্টস অ্যাক্সেসরিজ, জুতা এবং লাইফস্টাইলের নির্ভরযোগ্য ঠিকানা।</p>
             <a href="#products" class="btn">এখনই কেনাকাটা করুন</a>
         </div>
     </section>
@@ -140,23 +138,56 @@
     <script>
         AOS.init();
 
-        // Banner Slider Logic (2 seconds interval)
-        const slides = document.querySelectorAll('.hero-slide');
-        let currentSlide = 0;
-        setInterval(() => {
-            slides[currentSlide].classList.remove('active');
-            currentSlide = (currentSlide + 1) % slides.length;
-            slides[currentSlide].classList.add('active');
-        }, 2000);
+        // Load Website Customizations from Admin Panel
+        function loadSiteContent() {
+            // Settings
+            const settings = JSON.parse(localStorage.getItem('one_evan_settings')) || {
+                logo: "ONE EVAN",
+                title: "One Evan - Men's Fashion & Accessories",
+                heroTitle: "Welcome to One Evan",
+                heroDesc: "প্রিমিয়াম ছেলেদের ফ্যাশন, জেন্টস অ্যাক্সেসরিজ, জুতা এবং লাইফস্টাইলের নির্ভরযোগ্য ঠিকানা।"
+            };
 
-        const defaultProducts = [
-            { id: 1, name: "Premium Casual Shirt", price: 1250, oldPrice: 1600, img: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=500&q=80", sizes: "M, L, XL" },
-            { id: 2, name: "Classic Leather Shoes", price: 2800, oldPrice: 3500, img: "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=500&q=80", sizes: "40, 41, 42, 43" },
-            { id: 3, name: "Luxury Men's Perfume", price: 1850, oldPrice: 2200, img: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=500&q=80", sizes: "100ml" },
-            { id: 4, name: "Stylish Sunglasses", price: 950, oldPrice: 1300, img: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=500&q=80", sizes: "Free Size" }
-        ];
+            document.getElementById('siteLogoText').innerText = settings.logo;
+            document.getElementById('siteTitleTag').innerText = settings.title;
+            document.getElementById('heroTitleText').innerText = settings.heroTitle;
+            document.getElementById('heroDescText').innerText = settings.heroDesc;
 
+            // Banners / Slider Images
+            const defaultBanners = [
+                "https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?auto=format&fit=crop&w=1350&q=80",
+                "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1350&q=80",
+                "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1350&q=80"
+            ];
+            const banners = JSON.parse(localStorage.getItem('one_evan_banners')) || defaultBanners;
+
+            const sliderContainer = document.getElementById('heroSliderContainer');
+            sliderContainer.innerHTML = "";
+            banners.forEach((imgUrl, index) => {
+                sliderContainer.innerHTML += `<div class="hero-slide ${index === 0 ? 'active' : ''}" style="background-image: url('${imgUrl}');"></div>`;
+            });
+
+            // Start Slider Rotation (Every 2 seconds)
+            const slides = document.querySelectorAll('.hero-slide');
+            if(slides.length > 0) {
+                let currentSlide = 0;
+                setInterval(() => {
+                    slides[currentSlide].classList.remove('active');
+                    currentSlide = (currentSlide + 1) % slides.length;
+                    slides[currentSlide].classList.add('active');
+                }, 2000);
+            }
+        }
+
+        // Load Products
         function loadProducts() {
+            const defaultProducts = [
+                { id: 1, name: "Premium Casual Shirt", price: 1250, oldPrice: 1600, img: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=500&q=80", sizes: "M, L, XL" },
+                { id: 2, name: "Classic Leather Shoes", price: 2800, oldPrice: 3500, img: "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=500&q=80", sizes: "40, 41, 42, 43" },
+                { id: 3, name: "Luxury Men's Perfume", price: 1850, oldPrice: 2200, img: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=500&q=80", sizes: "100ml" },
+                { id: 4, name: "Stylish Sunglasses", price: 950, oldPrice: 1300, img: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=500&q=80", sizes: "Free Size" }
+            ];
+
             let products = JSON.parse(localStorage.getItem('one_evan_products')) || defaultProducts;
             const grid = document.getElementById('productGrid');
             grid.innerHTML = "";
@@ -202,7 +233,10 @@
             closeModal();
         }
 
-        window.onload = loadProducts;
+        window.onload = () => {
+            loadSiteContent();
+            loadProducts();
+        };
     </script>
 </body>
 </html>
