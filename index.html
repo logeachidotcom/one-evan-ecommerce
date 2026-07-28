@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One Evan - Men's Fashion & Accessories</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: #f9f9f9; color: #333; }
+        
+        /* Navbar */
+        header { background: #111; color: #fff; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .logo { font-size: 24px; font-weight: 700; letter-spacing: 1px; color: #22c55e; }
+        nav a { color: #fff; text-decoration: none; margin-left: 20px; font-weight: 500; transition: 0.3s; }
+        nav a:hover { color: #22c55e; }
+
+        /* Hero Slider Section */
+        .hero { position: relative; height: 75vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: #fff; padding: 0 20px; overflow: hidden; background: #111; }
+        .hero-slider { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        .hero-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; opacity: 0; transition: opacity 1s ease-in-out; }
+        .hero-slide.active { opacity: 1; }
+        .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2; }
+        .hero-content { position: relative; z-index: 3; }
+        .hero h1 { font-size: 45px; margin-bottom: 15px; font-weight: 700; }
+        .hero p { font-size: 18px; margin-bottom: 25px; max-width: 600px; }
+        .btn { background: #22c55e; color: #fff; padding: 12px 30px; border-radius: 30px; font-weight: 600; text-decoration: none; transition: 0.3s; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4); display: inline-block; }
+        .btn:hover { background: #16a34a; transform: translateY(-3px); }
+
+        /* Products Section */
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .section-title { text-align: center; font-size: 32px; margin-bottom: 30px; font-weight: 700; position: relative; }
+        .section-title::after { content: ''; width: 60px; height: 4px; background: #22c55e; display: block; margin: 8px auto 0; border-radius: 2px; }
+        
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 25px; }
+        .product-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08); transition: 0.3s; position: relative; }
+        .product-card:hover { transform: translateY(-8px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+        .product-img { width: 100%; height: 260px; object-fit: cover; }
+        .product-info { padding: 20px; }
+        .product-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+        .product-price { color: #e74c3c; font-size: 20px; font-weight: 700; margin-bottom: 12px; }
+        .old-price { text-decoration: line-through; color: #888; font-size: 14px; margin-left: 8px; }
+        .product-sizes { margin-bottom: 15px; font-size: 14px; color: #555; }
+        .buy-btn { width: 100%; background: #111; color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .buy-btn:hover { background: #22c55e; color: #fff; }
+
+        /* WhatsApp Floating Chat */
+        .whatsapp-float { position: fixed; bottom: 30px; right: 30px; background: #25d366; color: #fff; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 30px; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); z-index: 1000; text-decoration: none; transition: 0.3s; }
+        .whatsapp-float:hover { transform: scale(1.1); }
+        .support-label { position: fixed; bottom: 45px; right: 100px; background: #fff; padding: 8px 15px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); font-size: 14px; font-weight: 600; color: #333; z-index: 1000; display: flex; align-items: center; gap: 8px; }
+        .support-dot { width: 10px; height: 10px; background: #22c55e; border-radius: 50%; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 2000; }
+        .modal-content { background: #fff; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; position: relative; }
+        .modal-content h3 { margin-bottom: 15px; font-size: 22px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
+        .close-modal { position: absolute; top: 15px; right: 15px; font-size: 20px; cursor: pointer; color: #888; }
+    </style>
+</head>
+<body>
+
+    <!-- Header (No Admin Link Here) -->
+    <header>
+        <div class="logo">ONE EVAN</div>
+        <nav>
+            <a href="#">হোম</a>
+            <a href="#products">শপ</a>
+        </nav>
+    </header>
+
+    <!-- Hero Slider Section (Changes every 2 seconds) -->
+    <section class="hero" data-aos="fade-in">
+        <div class="hero-slider">
+            <div class="hero-slide active" style="background-image: url('https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?auto=format&fit=crop&w=1350&q=80');"></div>
+            <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1350&q=80');"></div>
+            <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1350&q=80');"></div>
+        </div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>Welcome to One Evan</h1>
+            <p>প্রিমিয়াম ছেলেদের ফ্যাশন, জেন্টস অ্যাক্সেসরিজ, জুতা এবং লাইফস্টাইলের নির্ভরযোগ্য ঠিকানা।</p>
+            <a href="#products" class="btn">এখনই কেনাকাটা করুন</a>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <div class="container" id="products">
+        <h2 class="section-title" data-aos="fade-up">আমাদের এক্সক্লুসিভ কালেকশন</h2>
+        <div class="product-grid" id="productGrid"></div>
+    </div>
+
+    <!-- Support & WhatsApp -->
+    <div class="support-label"><div class="support-dot"></div> ২৪/৭ হেল্প সাপোর্ট</div>
+    <a href="https://wa.me/966579516277?text=হ্যালো,%20ওয়ান%20ইভান%20থেকে%20সাহায্য%20প্রয়োজন!" class="whatsapp-float" target="_blank">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <!-- Order Modal -->
+    <div class="modal" id="orderModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h3>অর্ডার কনফার্ম করুন</h3>
+            <form id="checkoutForm" onsubmit="sendToWhatsApp(event)">
+                <input type="hidden" id="modalProductName">
+                <input type="hidden" id="modalProductPrice">
+                <div class="form-group">
+                    <label>আপনার নাম:</label>
+                    <input type="text" id="custName" required placeholder="পূর্ণ নাম লিখুন">
+                </div>
+                <div class="form-group">
+                    <label>মোবাইল নম্বর:</label>
+                    <input type="text" id="custPhone" required placeholder="ফোন নম্বর লিখুন">
+                </div>
+                <div class="form-group">
+                    <label>ডেলিভারি ঠিকানা:</label>
+                    <input type="text" id="custAddress" required placeholder="সম্পূর্ণ ঠিকানা ও এলাকা">
+                </div>
+                <div class="form-group">
+                    <label>সাইজ সিলেক্ট করুন:</label>
+                    <select id="custSize">
+                        <option value="Standard">Standard / Free Size</option>
+                        <option value="M">M</option>
+                        <option value="L">L</option>
+                        <option value="XL">XL</option>
+                    </select>
+                </div>
+                <button type="submit" class="buy-btn" style="background: #25d366; color: #fff;">হোয়াটসঅ্যাপে অর্ডার পাঠান</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init();
+
+        // Banner Slider Logic (2 seconds interval)
+        const slides = document.querySelectorAll('.hero-slide');
+        let currentSlide = 0;
+        setInterval(() => {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }, 2000);
+
+        const defaultProducts = [
+            { id: 1, name: "Premium Casual Shirt", price: 1250, oldPrice: 1600, img: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=500&q=80", sizes: "M, L, XL" },
+            { id: 2, name: "Classic Leather Shoes", price: 2800, oldPrice: 3500, img: "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=500&q=80", sizes: "40, 41, 42, 43" },
+            { id: 3, name: "Luxury Men's Perfume", price: 1850, oldPrice: 2200, img: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=500&q=80", sizes: "100ml" },
+            { id: 4, name: "Stylish Sunglasses", price: 950, oldPrice: 1300, img: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=500&q=80", sizes: "Free Size" }
+        ];
+
+        function loadProducts() {
+            let products = JSON.parse(localStorage.getItem('one_evan_products')) || defaultProducts;
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = "";
+            
+            products.forEach(p => {
+                grid.innerHTML += `
+                    <div class="product-card" data-aos="fade-up">
+                        <img src="${p.img}" alt="${p.name}" class="product-img">
+                        <div class="product-info">
+                            <div class="product-title">${p.name}</div>
+                            <div class="product-price">৳${p.price} <span class="old-price">৳${p.oldPrice}</span></div>
+                            <div class="product-sizes"><i class="fa-solid fa-ruler-combined"></i> সাইজ: ${p.sizes}</div>
+                            <button class="buy-btn" onclick="openOrderModal('${p.name}', '${p.price}')">অর্ডার করুন</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function openOrderModal(name, price) {
+            document.getElementById('modalProductName').value = name;
+            document.getElementById('modalProductPrice').value = price;
+            document.getElementById('orderModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('orderModal').style.display = 'none';
+        }
+
+        function sendToWhatsApp(e) {
+            e.preventDefault();
+            const name = document.getElementById('custName').value;
+            const phone = document.getElementById('custPhone').value;
+            const address = document.getElementById('custAddress').value;
+            const size = document.getElementById('custSize').value;
+            const prodName = document.getElementById('modalProductName').value;
+            const prodPrice = document.getElementById('modalProductPrice').value;
+
+            const adminWhatsApp = "966579516277"; 
+            const message = `*নতুন অর্ডার - One Evan*%0A%0A*প্রোডাক্ট:* ${prodName}%0A*মূল্য:* ৳${prodPrice}%0A*সাইজ:* ${size}%0A%0A*গ্রাহকের নাম:* ${name}%0A*ফোন:* ${phone}%0A*ঠিকানা:* ${address}%0A%0Aক্যাশ অন ডেলিভারিতে অর্ডারটি কনফার্ম করুন।`;
+
+            window.open(`https://wa.me/${adminWhatsApp}?text=${message}`, '_blank');
+            closeModal();
+        }
+
+        window.onload = loadProducts;
+    </script>
+</body>
+</html>
